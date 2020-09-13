@@ -1,0 +1,43 @@
+---
+title: "data_analysis"
+author: "Orhan"
+date: "11 09 2020"
+output:
+  html_document:
+    theme: flatly
+    df_print: paged
+    number_sections: yes
+  pdf_document: 
+    number_sections: yes
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Giriş {-}
+
+Bu dökümanda ......
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+data<-as_tibble(expand.grid(c(1:6)*5, c(0:5)*10+25))
+
+```
+
+```{r}
+data<-data %>% mutate(value=Var1*Var2)
+```
+
+
+```{r}
+ggplot(data, aes(x=Var2, y=reorder(Var1,-Var1), fill=value)) + 
+  geom_tile()+
+  scale_fill_distiller(name = "Aylık\nGelir", palette = "Reds", direction = 1)
+```
+
