@@ -1,7 +1,7 @@
 ---
 title: "data_analysis"
 author: "Orhan"
-date: "11 09 2020"
+date: "14 09 2020"
 output:
   html_document:
     theme: flatly
@@ -14,30 +14,132 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(
+	echo = FALSE,
+	message = FALSE,
+	warning = FALSE
+)
 ```
 
 # Giriş {-}
 
-Bu dökümanda ......
+Bu dökümanda upwork'e dahil olunması durumunda bir haftada çalışılan saat sayısı ve alınacak saatlik bedel değişkenleri üzerinden aylık gelir hesaplamaları yapılmıştır. 
 
-```{r}
+```{r libraries}
 library(tidyverse)
 ```
 
-```{r}
-data<-as_tibble(expand.grid(c(1:6)*5, c(0:5)*10+25))
-
+```{r create data}
+data <- as_tibble(expand.grid(c(1:6) * 5, c(0:5) * 10 + 25))
 ```
 
-```{r}
-data<-data %>% mutate(value=Var1*Var2)
+```{r coefficients}
+week_to_month_coef <- 365.6 / 12 / 7
+exchange_rate <- 7.5
+upwork_rate <- 0.2
+tax_ratio <- 0.2
 ```
 
-
-```{r}
-ggplot(data, aes(x=Var2, y=reorder(Var1,-Var1), fill=value)) + 
-  geom_tile()+
-  scale_fill_distiller(name = "Aylık\nGelir", palette = "Reds", direction = 1)
+```{r create variables}
+data <- data %>%
+  rename(
+    hourly_rate = Var1,
+    weekly_work_hour = Var2
+  ) %>%
+  mutate(monthly_income_usd = round(
+    hourly_rate *
+      weekly_work_hour *
+      week_to_month_coef *
+      (1 - upwork_rate)
+  )) %>%
+  mutate(
+    monthly_income_tl = round(monthly_income_usd * 7.5,0)
+  ) %>%
+  mutate(
+    monthly_income_tl_net = round(monthly_income_tl * (1 - tax_ratio))
+  )
 ```
 
+# Dolar bazında
+En temel olarak bu iki değişkenin çarpımı haftalık geliri ifade ediyor. Bir ayda `r round(week_to_month_coef,2)` hafta olduğunu göre farklı kombinasyonlara göre aylık gelirler upwork'ın payı çıktıktan sonra dolar bazında şöyle oluşuyor.
+```{r monthly income usd}
+data %>%
+  mutate(weekly_work_hour = paste("$", weekly_work_hour, sep = "")) %>%
+  ggplot(aes(
+    x = weekly_work_hour,
+    y = reorder(hourly_rate, -hourly_rate),
+    fill = monthly_income_usd
+  )) +
+  geom_tile() +
+  ggtitle("Heatmap of Monthly Income depending on Weekly Work Hour and Hourly Rate") +
+  xlab("Hourly Rate") +
+  ylab("Weekly Work Hour") +
+  scale_x_discrete(labels = c("$25", "$35", "$45", "$55", "$65", "$75")) +
+  scale_fill_distiller(name = "Aylık\nGelir", palette = "Reds", direction = 1) +
+  geom_text(
+    aes(
+      x = weekly_work_hour,
+      y = reorder(hourly_rate, -hourly_rate),
+      label = paste("$", as.character(monthly_income_usd), sep = "")
+    ),
+    color = "black",
+    size = 4
+  )
+```
+```{r}
+```
+
+# TL bazında
+
+Aynı tablonun tl versiyonu aşağıdaki gibi.
+```{r monthly income tl}
+data %>%
+  mutate(weekly_work_hour = paste("$", weekly_work_hour, sep = "")) %>%
+  ggplot(aes(
+    x = weekly_work_hour,
+    y = reorder(hourly_rate, -hourly_rate),
+    fill = monthly_income_tl
+  )) +
+  geom_tile() +
+  ggtitle("Heatmap of Monthly Income depending on Weekly Work Hour and Hourly Rate") +
+  xlab("Hourly Rate") +
+  ylab("Weekly Work Hour") +
+  scale_x_discrete(labels = c("$25", "$35", "$45", "$55", "$65", "$75")) +
+  scale_fill_distiller(name = "Aylık\nGelir", palette = "Reds", direction = 1) +
+  geom_text(
+    aes(
+      x = weekly_work_hour,
+      y = reorder(hourly_rate, -hourly_rate),
+      label = paste(format(monthly_income_tl,big.mark = "."),"tl")
+    ),
+    color = "black",
+    size = 4
+  )
+```
+
+Elbette şimdiye kadarki incelememizde vergiler hesaba katılmadı. Ancak araştırmama göre yurtdışına yapılan bu tip hizmetlerde KDV muhafiyeti ve %50 gelir vergisi istisnası var. Bu şartlar altında aylık net geliri ücretten kesilecek vergiyi %`r round(tax_ratio*100)` olarak varsayarak yine tl olarak gösteriyoruz.
+
+```{r monthly income tl net, echo=FALSE, message=FALSE, warning=FALSE}
+data %>%
+  mutate(weekly_work_hour = paste("$", weekly_work_hour, sep = "")) %>%
+  ggplot(aes(
+    x = weekly_work_hour,
+    y = reorder(hourly_rate, -hourly_rate),
+    fill = monthly_income_tl_net
+  )) +
+  geom_tile() +
+  ggtitle("Heatmap of Monthly Income depending on Weekly Work Hour and Hourly Rate")+ theme_tufte() +
+  xlab("Hourly Rate") +
+  ylab("Weekly Work Hour") +
+  scale_x_discrete(labels = c("$25", "$35", "$45", "$55", "$65", "$75")) +
+  scale_fill_distiller(name = "Aylık\nGelir", palette = "Reds", direction = 1) +
+  geom_text(
+    aes(
+      x = weekly_work_hour,
+      y = reorder(hourly_rate, -hourly_rate),
+      label = paste(format(monthly_income_tl_net,big.mark = "."),"tl")
+    ),
+    color = "black",
+    size = 4
+  )
+```
