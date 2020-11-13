@@ -1,5 +1,5 @@
 ---
-title: "data_analysis"
+title: "upwork potential income opportunities"
 author: "Orhan"
 date: "14 09 2020"
 output:
@@ -15,15 +15,9 @@ editor_options:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
-<<<<<<< HEAD
   echo = FALSE,
   message = FALSE,
   warning = FALSE
-=======
-	echo = FALSE,
-	message = FALSE,
-	warning = FALSE
->>>>>>> e7770ba97a820fc7f8ca91e1d3774cd04992faf7
 )
 ```
 
@@ -41,7 +35,7 @@ data <- as_tibble(expand.grid(c(1:6) * 5, c(0:5) * 10 + 25))
 
 ```{r coefficients}
 week_to_month_coef <- 365.6 / 12 / 7
-exchange_rate <- 7.5
+exchange_rate <- 7.7
 upwork_rate <- 0.2
 tax_ratio <- 0.2
 ```
@@ -59,11 +53,7 @@ data <- data %>%
       (1 - upwork_rate)
   )) %>%
   mutate(
-<<<<<<< HEAD
-    monthly_income_tl = round(monthly_income_usd * 7.5, 0)
-=======
-    monthly_income_tl = round(monthly_income_usd * 7.5,0)
->>>>>>> e7770ba97a820fc7f8ca91e1d3774cd04992faf7
+  monthly_income_tl = round(monthly_income_usd * 7.5, 0)
   ) %>%
   mutate(
     monthly_income_tl_net = round(monthly_income_tl * (1 - tax_ratio))
@@ -81,10 +71,7 @@ data %>%
     fill = monthly_income_usd
   )) +
   geom_tile() +
-<<<<<<< HEAD
   theme_minimal() +
-=======
->>>>>>> e7770ba97a820fc7f8ca91e1d3774cd04992faf7
   ggtitle("Heatmap of Monthly Income depending on Weekly Work Hour and Hourly Rate") +
   xlab("Hourly Rate") +
   ylab("Weekly Work Hour") +
@@ -100,12 +87,7 @@ data %>%
     size = 4
   )
 ```
-```{r}
-<<<<<<< HEAD
 
-=======
->>>>>>> e7770ba97a820fc7f8ca91e1d3774cd04992faf7
-```
 
 # TL bazında
 
@@ -120,10 +102,7 @@ data %>%
   )) +
   geom_tile() +
   ggtitle("Heatmap of Monthly Income depending on Weekly Work Hour and Hourly Rate") +
-<<<<<<< HEAD
   theme_minimal() +
-=======
->>>>>>> e7770ba97a820fc7f8ca91e1d3774cd04992faf7
   xlab("Hourly Rate") +
   ylab("Weekly Work Hour") +
   scale_x_discrete(labels = c("$25", "$35", "$45", "$55", "$65", "$75")) +
@@ -132,11 +111,7 @@ data %>%
     aes(
       x = weekly_work_hour,
       y = reorder(hourly_rate, -hourly_rate),
-<<<<<<< HEAD
       label = paste(format(monthly_income_tl, big.mark = "."), "tl")
-=======
-      label = paste(format(monthly_income_tl,big.mark = "."),"tl")
->>>>>>> e7770ba97a820fc7f8ca91e1d3774cd04992faf7
     ),
     color = "black",
     size = 4
@@ -154,12 +129,7 @@ data %>%
     fill = monthly_income_tl_net
   )) +
   geom_tile() +
-<<<<<<< HEAD
-  ggtitle("Heatmap of Monthly Income depending on Weekly Work Hour and Hourly Rate") +
-  theme_minimal() +
-=======
-  ggtitle("Heatmap of Monthly Income depending on Weekly Work Hour and Hourly Rate")+ theme_tufte() +
->>>>>>> e7770ba97a820fc7f8ca91e1d3774cd04992faf7
+  ggtitle("Heatmap of Monthly Income depending on Weekly Work Hour and Hourly Rate")+ theme_minimal() +
   xlab("Hourly Rate") +
   ylab("Weekly Work Hour") +
   scale_x_discrete(labels = c("$25", "$35", "$45", "$55", "$65", "$75")) +
@@ -168,17 +138,9 @@ data %>%
     aes(
       x = weekly_work_hour,
       y = reorder(hourly_rate, -hourly_rate),
-<<<<<<< HEAD
       label = paste(format(monthly_income_tl_net, big.mark = "."), "tl")
-=======
-      label = paste(format(monthly_income_tl_net,big.mark = "."),"tl")
->>>>>>> e7770ba97a820fc7f8ca91e1d3774cd04992faf7
     ),
     color = "black",
     size = 4
   )
-<<<<<<< HEAD
-```
-=======
-```
->>>>>>> e7770ba97a820fc7f8ca91e1d3774cd04992faf7
+
